@@ -1,4 +1,5 @@
-import React from 'react'
+import React , { useEffect } from 'react'
+import axios from 'axios';
 
 const PropertyListing = ({name , imageUrl , isPopular , isRental , price , address , bed , bathroom , area}) => {
   return (
@@ -11,7 +12,10 @@ const PropertyListing = ({name , imageUrl , isPopular , isRental , price , addre
             <div className='flex items-center flex-row'>
                 <span className='font-extrabold leading-[150%] text-[#7065F0] text-2xl tracking-[-1px]'>{price}</span>
                 {isRental && (
-                    <span className='leading-[150%] text-[#000929]/60 px-1'>/month</span>
+                    <span className='leading-[150%] text-[#000929]/60 px-1'>ETH/month</span>
+                )}
+                {!isRental && (
+                    <span className='leading-[150%] text-[#000929]/60 px-1'>ETH/night</span>
                 )}
             </div>
             <div><span className='font-bold tracking-[-1px] leading-[150%] text-2xl'>{name}</span></div>

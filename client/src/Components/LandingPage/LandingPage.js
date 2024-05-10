@@ -1,5 +1,5 @@
 import React from 'react'
-import { Navbar , Hero , Benefits , Property , Tenants } from './PageComponents'
+import { Navbar , Hero , Benefits , Property , Tenants , CTA , Footer} from './PageComponents'
 
 const LandingPage = () => {
   return (
@@ -16,6 +16,12 @@ const LandingPage = () => {
         </section>
         <section className='w-full h-screen bg-[#100A55]'>
           <Tenants />
+        </section>
+        <section className='w-full h-fit'> 
+          <CTA />
+        </section>
+        <section className='w-full'>
+          <Footer />
         </section>
     </div>
   )

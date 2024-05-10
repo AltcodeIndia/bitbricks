@@ -12,7 +12,14 @@ import {
     BUY_PROPERTY_FAIL,
     PROPERTY_SOLD,
     PROPERTY_RESOLD,
+    ADD_TO_CART,
+    ADD_TO_CART_FAIL,
+    REMOVE_FROM_CART,
+    REMOVE_FROM_CART_FAIL,
+    UPDATE_IMAGE,
     UPDATE_PROFILE,
+    GET_INTERESTED_PROPERTIES,
+    GET_INTERESTED_PROPERTIES_FAILED
   } from "../types";
   
   export default (state, action) => {
@@ -86,11 +93,40 @@ import {
           ...state,
           // Handle property resold logic here
         };
-      case UPDATE_PROFILE:
+        case ADD_TO_CART:
+          if (action.payload && typeof action.payload === 'object') {
+            return {
+              ...state,
+              cart: [...state.cart, action.payload],
+            };
+          } else {
+            return state; // Return the current state if action.payload is not an object
+          }
+      case ADD_TO_CART_FAIL:
         return {
           ...state,
-          user: action.payload,
+          error: action.payload
+        }
+      case REMOVE_FROM_CART:
+        return {
+          ...state,
+          cart: state.cart.filter((item) => item.id !== action.payload.id),
+        }
+      case REMOVE_FROM_CART_FAIL:
+        return {
+          ...state,
+          error: action.payload
+        }
+      case GET_INTERESTED_PROPERTIES:
+        return {
+          ...state,
+          interestedProperties: action.payload,
         };
+      case GET_INTERESTED_PROPERTIES_FAILED:
+        return {
+          ...state,
+          error: action.payload
+        }
       default:
         return state;
     }

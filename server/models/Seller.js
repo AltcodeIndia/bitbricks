@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 import bcrypt from "bcrypt";
 import crypto from "crypto"
+import { env } from "node:process";
 import jwt from "jsonwebtoken"
 
 const sellerSchema = new Schema(
@@ -54,7 +55,7 @@ sellerSchema.methods.generateResetToken = function () {
 sellerSchema.methods.generateSellerToken = async function () {
 	const seller = this;
 	const payload = { id: seller.id };
-	const token = jwt.sign(payload, process.env.JWT_SECRET);
+	const token = jwt.sign(payload, env.JWT_SECRET);
 	seller.tokens = seller.tokens.concat({ token });
 	await seller.save();
 	return token;
@@ -71,18 +72,16 @@ sellerSchema.pre("save", async function (next) {
 	console.log("Seller document before save:", seller)
 	next()
 });
-sellerSchema.statics.findSellerByCredentials = async (email, password) => {
-	const seller = await Seller.findOne({ email });
-	if (!seller) {
-	  throw new Error("Unable to login");
-	}
-  
-	const isMatch = await bcrypt.compare(password, seller.password);
-	if (!isMatch) {
-	  throw new Error("Unable to login");
-	}
-  
-	return seller;
+sellerSchema.statics.findSellerByCredentials = async (id,token) => {
+	const seller = await Seller.findOne({
+		_id: id,
+		"tokens.token": token,
+	  });
+	  console.log("Code is here")
+	  if (!user) {
+		throw new Error("Unable to find seller");
+	  }
+	  return seller;
 };
 
 const Seller = mongoose.model("Seller", sellerSchema);

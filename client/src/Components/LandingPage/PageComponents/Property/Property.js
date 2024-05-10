@@ -1,17 +1,45 @@
-import React , { useState } from 'react'
-import PropertyList from './PropertyList';
+import React , { useState , useEffect } from 'react'
 import PropertyListing from './PropertyListing';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Property = () => {
   const [selectedOption, setSelectedOption] = useState('Rent');
   const [searchLocation, setSearchLocation] = useState('');
-  const filteredProperties = selectedOption === 'Buy' 
-    ? PropertyList.filter(property => property.isPopular && property.location.toLowerCase().includes(searchLocation.toLowerCase() && property.name.toLowerCase().includes(searchLocation.toLowerCase()))) 
-    : selectedOption === 'Rent' 
-    ? PropertyList.filter(property => property.isRental 
-    && property.location.toLowerCase().includes(searchLocation.toLowerCase() && property.name.toLowerCase().includes(searchLocation.toLowerCase()))) 
-    : [];
+  const [properties, setProperties] = useState([]);
+  useEffect(() => {
+    // Fetch property data from the backend API
+    axios.get('http://localhost:8000/api/property')
+      .then(response => {
+        // Set the fetched properties into state
+        setProperties(response.data.property);
+      })
+      .catch(error => {
+        console.error('Error fetching property details:', error);
+      });
+  }, []);
+
+  const filteredProperties = properties.filter(property => {
+    const lowercaseSearchLocation = searchLocation.toLowerCase();
+    const lowercasePropertyName = property.name.toLowerCase();
+    const lowercasePropertyLocation = property.location.toLowerCase();
+
+    if (selectedOption === 'Rent') {
+      return (
+        property.isRental &&
+        (lowercasePropertyName.includes(lowercaseSearchLocation) ||
+          lowercasePropertyLocation.includes(lowercaseSearchLocation))
+      );
+    } else if (selectedOption === 'Buy') {
+      return (
+        property.isPopular &&
+        (lowercasePropertyName.includes(lowercaseSearchLocation) ||
+          lowercasePropertyLocation.includes(lowercaseSearchLocation))
+      );
+    }
+    // Add more conditions if needed for 'Sell' option
+    return false;
+  });
   const handleOptionChange = (option) => {
     setSelectedOption(option);
   }
@@ -67,7 +95,7 @@ const Property = () => {
                         <p className="text-center text-gray-500 w-full h-[45rem] ">No property found</p>
                     ) : (
                         filteredProperties.map((property) => (
-                            <Link key={property.id} to={`/properties/${property.id}`}>
+                            <Link key={property._id} to={`/properties/${property._id}`}>
                               <PropertyListing {...property} />
                             </Link>
                         ))

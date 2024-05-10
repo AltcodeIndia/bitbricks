@@ -38,7 +38,7 @@ const PropertyList = [
         description: "Tranquil haven with a sprawling garden, perfect for relaxation and entertaining.",
         price: "4.85ETH",
         bed: 3,
-        bathroom: 2.5,
+        bathroom: 2,
         area: "8x15"
     },
     {
@@ -108,7 +108,7 @@ const PropertyList = [
         description: "Cozy and picturesque beach bungalow offering direct access to the sand and surf.",
         price: "5.10ETH",
         bed: 2,
-        bathroom: 1.5,
+        bathroom: 1,
         area: "7x10"
       },
       {

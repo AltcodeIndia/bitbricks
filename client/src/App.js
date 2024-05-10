@@ -1,9 +1,10 @@
 import React , { useState , useEffect , useContext } from 'react';
-import { Routes, Route , useLocation } from "react-router-dom";
+import { Routes, Route  } from "react-router-dom";
 import { LandingPage , Login , Signin , Seller , User , CategoryPage , Cart } from './Components';
 import { Loading , NotFound } from './Components/UI';
+import axios from 'axios'
 
-import PropertyList from './Components/LandingPage/PageComponents/Property/PropertyList';
+
 import PropertyDetails from './Components/LandingPage/PageComponents/Property/PropertyDetails.js';
 
 import './App.css';
@@ -12,23 +13,26 @@ import { SellerAuthContext } from './Context/Index.js';
 import { setAuthSellerToken , setAuthUserToken } from "./utils/setAuthToken.js"
 import { SellerPrivateRoute , UserPrivateRoute } from "./PrivateRoutes"
 
-
-if (localStorage.sellerToken) {
-  setAuthSellerToken(localStorage.sellerToken);
-}
-if (localStorage.userToken) {
-  setAuthUserToken(localStorage.userToken)
-}
-
-
 function App() {
-  const { loadSellerIfTokenFound } = useContext(SellerAuthContext);
-  const location = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location]);
+  const { isSellerAuthenticated } = useContext(SellerAuthContext);
+  if(isSellerAuthenticated) {
+    setAuthSellerToken(localStorage.sellerToken)
+  } else {
+    setAuthUserToken(localStorage.userToken)
+  }
   const [loading, setLoading] = useState(true);
   setTimeout(() => setLoading(false), 1800);
+  const [propertyData, setPropertyData] = useState([]);
+  useEffect(() => {
+    axios.get('http://localhost:8000/api/property')
+      .then(response => {
+        setPropertyData(response.data.property);
+      })
+      .catch(error => {
+        console.error('Error fetching property details:', error);
+      });
+  }, []);
+
   return (
     <>
       {loading ? (
@@ -45,10 +49,10 @@ function App() {
               <Route path='/category' element={<CategoryPage />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="*" element={<NotFound />} />
-              {PropertyList.map((property) => (
+              {propertyData.map(property => (
                 <Route
-                  key={property.id}
-                  path={`/properties/${property.id}`}
+                  key={property._id}
+                  path={`/properties/${property._id}`}
                   element={<PropertyDetails property={property} />}
                 />
               ))}

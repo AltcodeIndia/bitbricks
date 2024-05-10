@@ -12,9 +12,8 @@ import {
     BUY_PROPERTY_FAIL,
     PROPERTY_SOLD,
     PROPERTY_RESOLD,
-    ADD_TO_CART,
 } from "../types";
-const PropertyStateContext = (props) => {
+const PropertyState = (props) => {
     const initialState = {
         allProperties: [],
         userProperties: [],
@@ -57,11 +56,8 @@ const PropertyStateContext = (props) => {
   const sellProperty = async (propertyId) => {
     // Implement the logic to sell a property
   };
-    const addToCart = (property) => {
-        dispatch({ type: ADD_TO_CART, payload: property });
-    };
     return (
-        <PropertyStateContext.Provider
+        <PropertyContext.Provider
           value={{
             allProperties: state.allProperties,
             userProperties: state.userProperties,
@@ -77,11 +73,10 @@ const PropertyStateContext = (props) => {
             getHighestRatedProperty,
             buyProperty,
             sellProperty,
-            addToCart,
           }}
         >
           {props.children}
-        </PropertyStateContext.Provider>
+        </PropertyContext.Provider>
       );
 } 
-export default PropertyStateContext;
+export default PropertyState;

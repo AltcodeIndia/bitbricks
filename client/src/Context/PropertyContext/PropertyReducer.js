@@ -8,8 +8,6 @@ import {
     BUY_PROPERTY_FAIL,
     PROPERTY_SOLD,
     PROPERTY_RESOLD,
-    ADD_TO_CART,
-    ADD_TO_CART_FAIL
   } from "../types";
   
   export default (state, action) => {
@@ -60,11 +58,6 @@ import {
           ...state,
           // Handle property resold logic here
         };
-      case ADD_TO_CART:
-      return {
-        ...state,
-        cart: [...state.cart, action.payload],
-      };
       default:
         return state;
     }

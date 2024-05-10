@@ -3,6 +3,7 @@ const { Schema } = mongoose;
 import { env } from "node:process";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import jwt from "jsonwebtoken"
 
 const userSchema = new Schema(
     {
@@ -64,6 +65,7 @@ userSchema.methods.generateUserToken = async function () {
 	const payload = { id: user.id };
 	const token = jwt.sign(payload, env.JWT_SECRET);
 	user.tokens = user.tokens.concat({ token });
+	console.log("GenerateUserToken:", token)
 	await user.save();
 	return token;
 };
@@ -88,17 +90,15 @@ userSchema.pre("save", async function (next) {
 	console.log("User document before save:", user)
 	next()
 });
-userSchema.statics.findUserByCredentials = async (email, password) => {
-	const user = await User.findOne({ email });
+userSchema.statics.findUserByCredentials = async (id, token) => {
+	const user = await User.findOne({
+	  id: id,
+	  "tokens.token": token,
+	});
+	console.log("Code is here")
 	if (!user) {
-	  throw new Error("Unable to login");
+	  throw new Error("Unable to find user");
 	}
-  
-	const isMatch = await bcrypt.compare(password, user.password);
-	if (!isMatch) {
-	  throw new Error("Unable to login");
-	}
-  
 	return user;
 };
 const User = mongoose.model("User", userSchema);

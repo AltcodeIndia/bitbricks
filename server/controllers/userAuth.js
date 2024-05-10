@@ -10,6 +10,7 @@ const getAllUsers = async(req , res ) => {
 }
 const getUserProfile = asyncHandler(async (req, res) => {
 	const user = req.user;
+  console.log(user)
 	if (!user) {
 	  res.status(404).json({ message: "User not found" });
 	  return;
@@ -44,8 +45,17 @@ const loginUser = asyncHandler(async (req, res) => {
 	  if (!isMatch) {
 		return res.status(401).json({ message: "Invalid email or password" });
 	  }
-	  res.json({ message: "Login Successful", user }); // Send response with user data
-  
+    
+    const token = await user.generateUserToken();
+	  res.status(200).json({ 
+      name: user.name,
+      email: user.email,
+      image: user.image,
+      InterestedProperties: user.InterestedProperties,
+      purchasedProperties: user.purchasedProperties,
+      token,
+    }); // Send response with user data
+    
 	} catch (error) {
 	  console.error(error);
 	  res.status(500).json({ message: "Server Error" });

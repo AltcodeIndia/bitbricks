@@ -8,7 +8,7 @@ import {
     getPurchasedProperty,
     getPropertyByCategory
 } from "../controllers/Listing.js"
-import userMiddleware from "../middleware/userAuth.js";
+import userMiddleware from "../middleware/userAuth.js"
 
 const propertyRouter = express.Router();
 propertyRouter.route("/api/property").get(getListing);

@@ -10,19 +10,45 @@ import {
   LOGIN_FAIL,
   LOGIN_SUCCESS,
   LOGOUT,
+  SET_AUTH_REF,
   CLEAR_ERRORS,
+  ADD_TO_CART,
+  ADD_TO_CART_FAIL,
+  REMOVE_FROM_CART,
+  REMOVE_FROM_CART_FAIL,
+  GET_INTERESTED_PROPERTIES,
+  GET_INTERESTED_PROPERTIES_FAILED
 } from "../types.js";
+import { setAuthUserToken } from "../../utils/setAuthToken.js";
 
 const UserAuthState = (props) => {
   const initialState = {
-    token: null,
+    token: localStorage.getItem("userToken"),
     error: null,
     isUserAuthenticated: false,
     loading: true,
     user: null,
+    myProperties: null,
   };
 
   const [state, dispatch] = useReducer(UserAuthReducer, initialState);
+
+  const loadUserIfTokenFound = async () => {
+    if(localStorage.userToken) {
+      setAuthUserToken(localStorage.userToken);
+      const config = {
+        headers: {
+          "Content-Type" : "application/json",
+        },
+      };
+      try {
+        const res = await axios.get("http://localhost:8000/api/user/profile", config);
+        dispatch ({ type: USER_LOADED, payload: res.data })
+      } catch (error) {
+        dispatch({ type: AUTH_ERROR })
+      }
+    }
+  }
 
   const loadUser = async () => {
     const config = {
@@ -74,6 +100,7 @@ const UserAuthState = (props) => {
       );
       console.log("Authentication details:", res.data);
       dispatch({ type: LOGIN_SUCCESS, payload: res.data });
+      dispatch({ type: SET_AUTH_REF, payload: true});
     } catch (error) {
       console.log("Authentication Error:", error.response.data);
       dispatch({ type: LOGIN_FAIL, payload: error.response.data.message });
@@ -88,6 +115,48 @@ const UserAuthState = (props) => {
     dispatch({ type: CLEAR_ERRORS });
   };
 
+  const addPropertyToInterestedProperties = async (id) => {
+    const config =  {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    try {
+      const res = await axios.post(
+        `http://localhost:8000/api/property/interestedProperty/${id}`, 
+        config
+      )
+      console.log("addProperty:",res.data)
+      dispatch({ type: ADD_TO_CART, payload: res.data });
+    } catch (error) {
+      dispatch({ type: ADD_TO_CART_FAIL, payload: error.message });
+    }
+  };
+  const removeFromCart = (property) => {
+    try {
+      dispatch({ type: REMOVE_FROM_CART, payload: property });
+    } catch (error) {
+      dispatch({ type: REMOVE_FROM_CART_FAIL, payload: error.message })
+    }
+  };
+
+  const getInterestedProperties = () => async () => {
+    const config =  {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    try {
+      const res = await axios.get('http://localhost:8000/api/user/interestedProperty', config);
+      dispatch({
+        type: GET_INTERESTED_PROPERTIES,
+        payload: res.data.InterestedProperties,
+      });
+    } catch (error) {
+      dispatch({ type: GET_INTERESTED_PROPERTIES_FAILED, payload: error.message })
+    }
+  }
+
   return (
     <UserAuthContext.Provider
       value={{
@@ -96,11 +165,15 @@ const UserAuthState = (props) => {
         error: state.error,
         isUserAuthenticated: state.isUserAuthenticated,
         loading: state.loading,
+        loadUserIfTokenFound,
         registerUser,
         clearUserErrors,
         loadUser,
         loginUser,
         logoutUser,
+        addPropertyToInterestedProperties,
+        removeFromCart,
+        getInterestedProperties
       }}
     >
       {props.children}

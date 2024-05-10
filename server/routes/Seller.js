@@ -39,7 +39,7 @@ sellerRouter
 	.post(upload.single("image"), sellerAuthMiddleware, uploadSellerImage);
 
 sellerRouter
-    .route("/api/property")
+    .route("/api/seller/property")
     .get(sellerAuthMiddleware , getSellerListings)
     .post(upload.any(), sellerAuthMiddleware, createListing)
 

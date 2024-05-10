@@ -25,6 +25,8 @@ import {
 	UPDATE_IMAGE,
 	UPDATE_PROFILE,
 } from "../types.js"
+import { createThirdwebClient, getContract } from "thirdweb";
+import { defineChain } from "thirdweb/chains";
 
 const SellerAuthState = (props) => {
     const initialState = {
@@ -37,6 +39,15 @@ const SellerAuthState = (props) => {
 		properties: []
 	};
     const [state, dispatch] = useReducer(SellerAuthReducer, initialState);
+	const client = createThirdwebClient({ 
+		clientId: "b3c45b2c2feeff455157daed3574b114"
+	   });
+	const contract = getContract({ 
+		client, 
+		chain: defineChain(80002), 
+		address: "0xa46F5570c61602529E2cE64d69d379467213bd7E"
+	  });
+	  
 	const loadSellerIfTokenFound = async () => {
 		if (localStorage.sellerToken) {
 			setAuthSellerToken(localStorage.sellerToken);
@@ -123,15 +134,21 @@ const SellerAuthState = (props) => {
 		dispatch({ type: CLEAR_ERRORS });
 	};
 	const addProperty = async (formData) => {
+		const config = {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		};
 		try {
-		  console.log("Sending request to:", "http://localhost:8000/api/property"); // Log the URL
-		  console.log("Request data:", formData); // Log the request data
-		  const res = await axios.post("http://localhost:8000/api/property", formData);
-		  console.log("Response data:", res.data); // Log the response data
+		  const res = await axios.post(
+			"http://localhost:8000/api/property", 
+			formData,
+			config
+		);
+		  console.log("Response data:", res.data);
 		  dispatch({ type: LIST_PROPERTY, payload: res.data });
 		} catch (error) {
-		  console.log("Error:", error.message); // Log the error message
-		  console.log("Error response data:", error.response.data); // Log the error response data
+		  console.log("Error response data:", error.response.data); 
 		  dispatch({ type: LIST_PROPERTY_FAIL, payload: error.message });
 		}
 	  };
@@ -216,6 +233,7 @@ const SellerAuthState = (props) => {
 				isSellerAuthenticated: state.isSellerAuthenticated,
 				loading: state.loading,
 				properties: state.properties,
+				contract,
 				loadSellerIfTokenFound,
                 registerSeller,
 				clearSellerErrors,
@@ -227,7 +245,7 @@ const SellerAuthState = (props) => {
 				getSellerListing,
 				updateImage,
 				updateProfile,
-				authenticateSeller
+				authenticateSeller,
             }}
         >
             {props.children}

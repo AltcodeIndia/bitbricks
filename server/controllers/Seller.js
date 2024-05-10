@@ -49,9 +49,7 @@ const uploadSellerImage = asyncHandler(async (req, res) => {
   });
   const createListing = asyncHandler(async (req, res) => {
     console.log('req.body:', req.body);
-  
     const { name, isRental, location, address, category, description, price, bed, bathroom, area, image } = req.body;
-  
     if (!name || !isRental || price < 1) {
       res.status(400).json({ message: "Please Provide valid details" });
       throw new Error("Please provide valid details");

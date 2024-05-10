@@ -4,10 +4,11 @@ import { getIndexOfProperty, verifyId } from "../utils/helpers.js";
 import User from "../models/User.js";
 import Seller from "../models/Seller.js";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 
 dotenv.config();
 const getListing = asyncHandler(async (req, res) => {
-    const listing = await Listing.find({sold: false, isReadyForSale: false});
+    const listing = await Listing.find({sold: false});
     const finalListings = listing.map((property) => {
         if (property.image) {
             let buffer = Buffer.from(property.image);
@@ -51,7 +52,7 @@ const getListing = asyncHandler(async (req, res) => {
             return property;
         }
     })
-    res.json(201).json({ property: finalListings });
+    res.json({ property: finalListings });
 })
 const getPropertyByCategory = asyncHandler(async(req, res) => {
     let {
@@ -112,34 +113,52 @@ const getPropertyByCategory = asyncHandler(async(req, res) => {
             });
             res.json(201).json({ property: finalListings });
         });
-const addPropertyToInterestedProperties = asyncHandler(async (req, res) => {
-    const {
-        params: { id },
-        user: { InterestedProperties },
-    } = req;
-    if (!id) {
-        res.status(400).json({ message: "Property ID invalid" });
-        throw new Error("Property ID invalid");
-    }
-    const pId = id.toString();
-    if(!verifyId) {
-        res.status(400).json({ message: "Property ID invalid" });
-        throw new Error("Property ID invalid");
-    }
-    const propertyIndex = getIndexOfProperty(InterestedProperties, id);
-    if (propertyIndex > -1) {
-		res.status(400).json({ message: "Property is already wishlisted!" });
-		throw new Error("Property is already wishlisted!");
-	}
-    const listing = await Listing.findById(pId);
-    if (!listing || listing.sold) {
-        res.status(400).json({ message : "Property not found!" })
-        throw new Error("Property not found!")
-    }
-    InterestedProperties.push(id);
-    await req.user.save();
-    res.status(201).json({ message: "Property wishlisted successfully" })
-});
+        const addPropertyToInterestedProperties = asyncHandler(async (req, res) => {
+            const userId = req.user._id;
+            const propertyId = req.params.id;
+          
+            // Check if the property ID is a valid ObjectId
+            if (!mongoose.Types.ObjectId.isValid(propertyId)) {
+              return res.status(400).json({ message: "Invalid property ID" });
+            }
+          
+            try {
+              // Find the user and exclude the password field
+              const user = await User.findById(userId).select('-password');
+          
+              if (!user) {
+                return res.status(404).json({ message: "User not found" });
+              }
+          
+              // Check if the property is already in the user's interested properties list
+              const propertyIndex = user.InterestedProperties.findIndex(
+                (property) => property.toString() === propertyId
+              );
+          
+              if (propertyIndex !== -1) {
+                return res.status(400).json({ message: "Property already in interested properties" });
+              }
+          
+              // Find the property listing
+              const listing = await Listing.findById(propertyId);
+          
+              if (!listing || listing.sold) {
+                return res.status(404).json({ message: "Property not found or already sold" });
+              }
+          
+              // Add the property ID to the user's interested properties list
+              user.InterestedProperties.push(propertyId);
+              await user.save();
+          
+              return res.status(200).json({
+                message: "Property added to interested properties successfully",
+                property: listing,
+              });
+            } catch (error) {
+              console.error(error);
+              return res.status(500).json({ message: "Server Error" });
+            }
+          });
 const removePropertyFromInterestedProperties = asyncHandler(async (req , res) => {
     const {
         params: { id },
@@ -201,7 +220,7 @@ const purchasedProperties = asyncHandler(async ( req , res) => {
 })
 const getInterestedProperties = asyncHandler(async(req , res) => {
     const user = await User.findById(req.user.id)
-        .populate("purchasedProperties")
+        .populate("InterestedProperties")
         .exec();
     res.status(200).json({ InterestedProperties: user.InterestedProperties })
 })

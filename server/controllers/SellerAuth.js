@@ -48,6 +48,7 @@ const loginSeller = asyncHandler(async (req, res) => {
     res.status(200).json({
       name: seller.name,
       email: seller.email,
+      image: seller.image,
       token,
     });
   

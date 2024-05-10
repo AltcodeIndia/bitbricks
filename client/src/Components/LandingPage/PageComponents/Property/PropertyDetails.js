@@ -1,15 +1,21 @@
-import React , { useState } from 'react'
+import React , { useState , useContext } from 'react'
 import { Navbar } from "../index"
 import { NavLink } from 'react-router-dom'
+import { SellerAuthContext, UserAuthContext } from '../../../../Context/Index'
+
 
 const PropertyDetails = ({property}) => {
   const [ show , setShow ] = useState(false);
-  const [cartItems, setCartItems] = useState([]);
+  const { isSellerAuthenticated } = useContext(SellerAuthContext);
+  const { isUserAuthenticated } = useContext(UserAuthContext)
+  const authenticated = isSellerAuthenticated || isUserAuthenticated;
+  const { addPropertyToInterestedProperties  } = useContext(UserAuthContext);
   const handleDetailClick = () => {
     setShow(!show);
   }
   const handleAddToCart = () => {
-    setCartItems([...cartItems, property]);
+    console.log(property._id)
+    addPropertyToInterestedProperties(property._id);
   }
   return (
     <div className='w-full h-full'>
@@ -43,8 +49,16 @@ const PropertyDetails = ({property}) => {
                     <div className='flex w-2/3 flex-col gap-3'>
                         <button className='px-6 py-2 border-2 border-[#7065F0]/50 rounded'><NavLink className="font-bold text-[16px] leading-[150%]">Buy Now</NavLink></button>
                         <button className='px-6 py-2 border-2 bg-[#7065F0] text-white rounded h-[56px] flex flex-row justify-center items-center'>
-                            <NavLink className="font-bold text-[16px] leading-[150%]" key={property.id}>Add to Cart</NavLink>
-                            <img src='/PropertyListing/cart.svg' />    
+                            { !authenticated && (
+                                <>
+                                    <NavLink className="font-bold text-[16px] leading-[150%]" to={"/login"}>Login to get started</NavLink>
+                                </>
+                            )}
+                            { authenticated && (
+                                <>
+                                    <NavLink className="font-bold text-[16px] leading-[150%] flex" onClick={handleAddToCart}>Add to Cart <img src='/PropertyListing/cart.svg' /></NavLink>
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>
