@@ -1,4 +1,4 @@
-import React, { useReducer , useContext} from "react";
+import React, { useReducer } from "react";
 import axios from "axios";
 import SellerAuthReducer from "./SellerAuthReducer.js";
 import SellerAuthContext from "./SellerAuthContext.js";
@@ -15,18 +15,13 @@ import {
 	SET_AUTH_REF,
 	LIST_PROPERTY,
 	LIST_PROPERTY_FAIL,
-	UPDATE_PROPERTY,
-	UPDATE_PROPERTY_FAIL,
 	UPDATE_PROPERTY_IMAGE,
 	UPDATE_PROPERTY_IMAGE_FAIL,
-	UPDATE_PROPERTY_PRICE,
-	UPDATE_PROPERTY_PRICE_FAIL,
 	GET_USER_PROPERTIES,
 	UPDATE_IMAGE,
 	UPDATE_PROFILE,
 } from "../types.js"
-import { createThirdwebClient, getContract } from "thirdweb";
-import { defineChain } from "thirdweb/chains";
+
 
 const SellerAuthState = (props) => {
     const initialState = {
@@ -39,15 +34,6 @@ const SellerAuthState = (props) => {
 		properties: []
 	};
     const [state, dispatch] = useReducer(SellerAuthReducer, initialState);
-	const client = createThirdwebClient({ 
-		clientId: "b3c45b2c2feeff455157daed3574b114"
-	   });
-	const contract = getContract({ 
-		client, 
-		chain: defineChain(80002), 
-		address: "0xa46F5570c61602529E2cE64d69d379467213bd7E"
-	  });
-	  
 	const loadSellerIfTokenFound = async () => {
 		if (localStorage.sellerToken) {
 			setAuthSellerToken(localStorage.sellerToken);
@@ -233,7 +219,6 @@ const SellerAuthState = (props) => {
 				isSellerAuthenticated: state.isSellerAuthenticated,
 				loading: state.loading,
 				properties: state.properties,
-				contract,
 				loadSellerIfTokenFound,
                 registerSeller,
 				clearSellerErrors,

@@ -4,7 +4,6 @@ import { LandingPage , Login , Signin , Seller , User , CategoryPage , Cart } fr
 import { Loading , NotFound } from './Components/UI';
 import axios from 'axios'
 
-
 import PropertyDetails from './Components/LandingPage/PageComponents/Property/PropertyDetails.js';
 
 import './App.css';

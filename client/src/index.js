@@ -4,14 +4,13 @@ import App from './App';
 
 
 import { ThirdwebProvider } from "thirdweb/react";
-import { SellerState , UserState , PropertyState , ThirdwebState } from "./Context/Index.js"
+import { SellerState , UserState , PropertyState } from "./Context/Index.js"
 import { BrowserRouter } from 'react-router-dom'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ThirdwebProvider>
-      <ThirdwebState>
         <SellerState>
           <UserState>
             <PropertyState>
@@ -21,7 +20,6 @@ root.render(
             </PropertyState>
           </UserState>
         </SellerState>
-      </ThirdwebState>
     </ThirdwebProvider>
   </React.StrictMode>
 );
