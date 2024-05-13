@@ -52,7 +52,7 @@ const Hero = () => {
   };
 
   return (
-    <div className='w-full h-full flex flex-nowrap pt-12'>
+    <div className='w-full h-full flex flex-nowrap pt-3'>
         <div className='w-1/2 pl-20 flex flex-col gap-8'>
             <div className='flex flex-wrap gap-4'>
                 <span className='font-bold text-7xl leading-[110%] tracking-[-1%]'>Buy, rent, or sell your property easily</span>
@@ -93,7 +93,7 @@ const Hero = () => {
                     </div>
                 </div>
             </div>
-        <div><img src='/Hero/numbers.svg' alt='numbers'/></div>
+        <div><img src='/Hero/Numbers.svg' alt='numbers'/></div>
         </div>
         <div className='w-1/2'>
             <div className='flex flex-col w-[270px] bg-white rounded h-[285px] justify-evenly items-center absolute left-[45%]'>

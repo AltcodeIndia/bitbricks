@@ -1,7 +1,7 @@
 import React, { useContext , useState } from 'react'
 import { NavLink , useNavigate} from "react-router-dom"
 import { Logo } from '../../../UI'
-import { SellerAuthContext , UserAuthContext } from '../../../../Context/Index.js'
+import { SellerAuthContext , UserAuthContext , PropertyContext } from '../../../../Context/Index.js'
 import Dropdown from "./Dropdown.js"
 import { ConnectButton } from 'thirdweb/react'
 import { createWallet, inAppWallet } from "thirdweb/wallets";
@@ -9,6 +9,7 @@ import { createWallet, inAppWallet } from "thirdweb/wallets";
 
 const Navbar = () => {
   const redirect = useNavigate();
+  const { client } = useContext(PropertyContext);
   const { isSellerAuthenticated , logoutSeller } = useContext(SellerAuthContext);
   const { isUserAuthenticated , logoutUser } = useContext(UserAuthContext);
   const authenticated = isSellerAuthenticated || isUserAuthenticated;
@@ -73,7 +74,7 @@ const Navbar = () => {
             )}
             {authenticated && (
                 <>
-                    <ConnectButton wallets={wallets} className='px-6 py-2 border-2 border-[#E0DEF7] rounded' />
+                    <ConnectButton client={client} wallets={wallets} className='px-6 py-2 border-2 border-[#E0DEF7] rounded' />
                     <button className='px-6 py-2 border-2 border-[#E0DEF7] rounded' onClick={logoutHandler}><NavLink>Logout</NavLink></button>
                     <NavLink to={isSellerAuthenticated ? "/seller/dashboard" : "/user/dashboard"} className='flex items-center'><div><img src='/Navbar/profile.svg' alt='profile'/></div></NavLink>
                 </>
