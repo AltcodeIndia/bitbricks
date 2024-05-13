@@ -78,7 +78,7 @@ const SellerDashboard = () => {
               >Logout</div>
           </div>
           <div className='w-full h-[70vh] flex justify-center items-center'>
-            <div className='bg-[#5245ED]/70 w-2/3  h-fit px-20 py-10 flex flex-col border-2 border-[#EABFFF] gap-7 rounded-b-lg'>
+            <div className='bg-[#5245ED]/70 w-2/3  h-fit px-20 py-10 flex flex-col border-2 border-[#EABFFF] gap-7 rounded-b-lg justify-center'>
             {
               (state.asideSection === "profile" && <Profile />) ||
               (state.asideSection === "editProfile" && <EditProfile />) ||

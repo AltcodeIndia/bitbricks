@@ -1,7 +1,7 @@
 import React , { useState , useContext } from 'react'
 import { Navbar } from "../index"
 import { NavLink } from 'react-router-dom'
-import { SellerAuthContext, UserAuthContext } from '../../../../Context/Index'
+import { SellerAuthContext, UserAuthContext , PropertyContext } from '../../../../Context/Index'
 
 
 const PropertyDetails = ({property}) => {
@@ -9,13 +9,20 @@ const PropertyDetails = ({property}) => {
   const { isSellerAuthenticated } = useContext(SellerAuthContext);
   const { isUserAuthenticated } = useContext(UserAuthContext)
   const authenticated = isSellerAuthenticated || isUserAuthenticated;
-  const { addPropertyToInterestedProperties  } = useContext(UserAuthContext);
+  const { buyPropertyFunction  } = useContext(PropertyContext);
   const handleDetailClick = () => {
     setShow(!show);
   }
-  const handleAddToCart = () => {
-    console.log(property._id)
-    addPropertyToInterestedProperties(property._id);
+  const handleBuyNow = async () => {
+    const { _id, price } = property;
+    try {
+        await buyPropertyFunction({ productId: _id.toString(), amount: price.toString()});
+        console.info("Property purchase initiated successfully!");
+        // Handle success (e.g., show confirmation message)
+      } catch (err) {
+        console.error("Error buying property:", err);
+        // Handle error (e.g., show error message)
+      }
   }
   return (
     <div className='w-full h-full'>
@@ -47,7 +54,7 @@ const PropertyDetails = ({property}) => {
                         </div>
                     }
                     <div className='flex w-2/3 flex-col gap-3'>
-                        <button className='px-6 py-2 border-2 border-[#7065F0]/50 rounded'><NavLink className="font-bold text-[16px] leading-[150%]">Buy Now</NavLink></button>
+                        <button className='px-6 py-2 border-2 border-[#7065F0]/50 rounded'><NavLink className="font-bold text-[16px] leading-[150%]" onClick={handleBuyNow}>Buy Now</NavLink></button>
                         <button className='px-6 py-2 border-2 bg-[#7065F0] text-white rounded h-[56px] flex flex-row justify-center items-center'>
                             { !authenticated && (
                                 <>
@@ -56,7 +63,7 @@ const PropertyDetails = ({property}) => {
                             )}
                             { authenticated && (
                                 <>
-                                    <NavLink className="font-bold text-[16px] leading-[150%] flex" onClick={handleAddToCart}>Add to Cart <img src='/PropertyListing/cart.svg' /></NavLink>
+                                    <NavLink className="font-bold text-[16px] leading-[150%] flex">Add to Cart <img src='/PropertyListing/cart.svg' /></NavLink>
                                 </>
                             )}
                         </button>

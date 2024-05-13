@@ -3,9 +3,7 @@ import { NavLink , useNavigate} from "react-router-dom"
 import { Logo } from '../../../UI'
 import { SellerAuthContext , UserAuthContext } from '../../../../Context/Index.js'
 import Dropdown from "./Dropdown.js"
-import { ConnectButton } from 'thirdweb/react'
-import { createWallet, inAppWallet } from "thirdweb/wallets";
-
+import { ConnectWallet } from "@thirdweb-dev/react";
 
 const Navbar = () => {
   const redirect = useNavigate();
@@ -15,12 +13,7 @@ const Navbar = () => {
   const [click, setClick] = useState(false);
   const [dropdown, setDropdown] = useState(false);
   const handleClick = () => setClick(!click);
-  const wallets = [
-    inAppWallet(),
-    createWallet("io.metamask"),
-    createWallet("com.coinbase.wallet"),
-    createWallet("me.rainbow"),
-  ];
+
   const logoutHandler = () => {
     if (isSellerAuthenticated) {
       logoutSeller();
@@ -73,7 +66,7 @@ const Navbar = () => {
             )}
             {authenticated && (
                 <>
-                    <ConnectButton wallets={wallets} className='px-6 py-2 border-2 border-[#E0DEF7] rounded' />
+                    <ConnectWallet />
                     <button className='px-6 py-2 border-2 border-[#E0DEF7] rounded' onClick={logoutHandler}><NavLink>Logout</NavLink></button>
                     <NavLink to={isSellerAuthenticated ? "/seller/dashboard" : "/user/dashboard"} className='flex items-center'><div><img src='/Navbar/profile.svg' alt='profile'/></div></NavLink>
                 </>

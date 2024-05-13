@@ -1,5 +1,4 @@
 import React , { useEffect } from 'react'
-import axios from 'axios';
 
 const PropertyListing = ({name , imageUrl , isPopular , isRental , price , address , bed , bathroom , area}) => {
   return (
