@@ -2,7 +2,7 @@ import React , { useState , useContext } from 'react'
 import { Navbar } from "../index"
 import { NavLink } from 'react-router-dom'
 import { SellerAuthContext, UserAuthContext , PropertyContext } from '../../../../Context/Index'
-
+import { ethers } from 'ethers';
 
 const PropertyDetails = ({property}) => {
   const [ show , setShow ] = useState(false);
@@ -14,14 +14,14 @@ const PropertyDetails = ({property}) => {
     setShow(!show);
   }
   const handleBuyNow = async () => {
-    const { _id, price } = property;
+    const id = "0";
+    const { price } = property;
+    const amount = ethers.utils.parseEther(price.toString());
     try {
-        await buyPropertyFunction({ productId: _id.toString(), amount: price.toString()});
+        await buyPropertyFunction({ productId: id, amount });
         console.info("Property purchase initiated successfully!");
-        // Handle success (e.g., show confirmation message)
       } catch (err) {
         console.error("Error buying property:", err);
-        // Handle error (e.g., show error message)
       }
   }
   return (

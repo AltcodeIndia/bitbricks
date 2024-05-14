@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { PropertyContext } from '../../../Context/Index';
+import { useAddress } from '@thirdweb-dev/react';
 const CreateListing = () => {
   const { createPropertyFunction } = useContext(PropertyContext);
   const [propertyForm, setPropertyForm] = useState({
@@ -9,9 +10,11 @@ const CreateListing = () => {
     price: '',
     propertyAddress: '',
     image: '',
+    owner: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const address = useAddress();
   const handleChange = (event) => {
     const { name, value, files } = event.target;
     setPropertyForm((prevForm) => ({
@@ -24,7 +27,10 @@ const CreateListing = () => {
     setIsSubmitting(true);
     setError(null);
     try {
-      await createPropertyFunction(propertyForm);
+      await createPropertyFunction({        
+        ...propertyForm,
+        owner: address
+      });
       alert('Property listed successfully!');
       setPropertyForm({
         propertyTitle: '',
@@ -33,6 +39,7 @@ const CreateListing = () => {
         price: '',
         image: '',
         propertyAddress: '',
+        owner: '',
       });
     } catch (error) {
       console.error('Error creating listing:', error);
@@ -63,6 +70,18 @@ const CreateListing = () => {
             name="propertyTitle"
             id="propertyTitle"
             value={propertyForm.propertyTitle}
+            onChange={handleChange}
+            required
+            className='bg-transparent border rounded w-96 h-7 outline-none px-3'
+          />
+        </div>
+        <div className="w-full flex justify-between">
+          <label htmlFor="propertyTitle">Owner:</label>
+          <input
+            type="text"
+            name="owner"
+            id="owner"
+            value={propertyForm.owner}
             onChange={handleChange}
             required
             className='bg-transparent border rounded w-96 h-7 outline-none px-3'

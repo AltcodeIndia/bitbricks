@@ -28,10 +28,10 @@ const PropertyState = (props) => {
   const disconnect = useDisconnect();
   const signer = useSigner();
   const bitbricks = "0x76939DF9015075d777BAdaC2E641092f28Da4260"
-
   const { mutateAsync: listProperty } = useContractWrite( contract, "listProperty");
   const createPropertyFunction = async(form) => {
     const {
+      owner,
       propertyTitle,
       description,
       category,
@@ -41,8 +41,10 @@ const PropertyState = (props) => {
     } = form;
     try {
       const parsedPrice = ethers.utils.parseEther(price.toString());
+      const validOwnerAddress = ethers.utils.getAddress(owner);
       const data = await listProperty({
         args: [
+          validOwnerAddress,
           parsedPrice,
           propertyTitle,
           category,
@@ -97,12 +99,13 @@ const PropertyState = (props) => {
   };
 
   const { mutateAsync: buyProperty } = useContractWrite(contract, "buyProperty");
-  const buyPropertyFunction = async(buying) => {
+  const buyPropertyFunction = async (buying) => {
     const { productId, amount } = buying;
-    const value = ethers.utils.parseEther(amount.toString());
     try {
-      const data = await buyProperty({ args: [productId, address, bitbricks],value});
-      console.info("contract call successs", data);
+      console.log(typeof(productId))
+      const amountString = amount.toString();
+      const data = await buyProperty({ args: [productId, address, bitbricks], value: amountString });
+      console.info("contract call success", data);
     } catch (err) {
       console.error("contract call failure", err);
     }
